@@ -54,7 +54,23 @@ For any line that starts with `FIX`, tell the user what it means in plain words 
 
 If the browser isn't Chrome, Edge or Brave, find the two values yourself: the browser program's full path, and the profile's folder name. The folders are in the browser's user data folder, named `Default`, `Profile 1`, `Profile 2` and so on.
 
-## Step 3: Add the FrameCap MCP server for every project
+## Step 3: Add FrameCap to the AI apps on this computer
+
+Run this, with the number of the profile from step 2's list:
+
+```
+npx -y framecap-mcp install --pick <number>
+```
+
+If only one profile has FrameCap turned on, `npx -y framecap-mcp install` is enough.
+
+It adds FrameCap, for every project, to each AI app it finds (Claude Code, Codex, Cursor, Antigravity, VS Code, Windsurf, Gemini CLI, Claude Desktop), with that browser profile. Everything else in their settings stays as it is, and each changed file keeps a backup. Tell the user which apps it added FrameCap to.
+
+If your app isn't in its list, or it says `left alone` for your app, add FrameCap by hand as below.
+
+To take FrameCap out of every app again: `npx -y framecap-mcp uninstall`.
+
+### By hand
 
 The server starts with `npx -y framecap-mcp`. On Windows, put `cmd /c` in front (`cmd /c npx -y framecap-mcp`), because apps there can't start `npx` directly.
 
@@ -71,7 +87,7 @@ Add it user-wide, not for one project, so it works everywhere, with the two sett
 | VS Code | Ask the user to run **MCP: Open User Configuration** from the Command Palette, then add the block there. VS Code names the list `servers`, not `mcpServers` |
 | Antigravity | Ask the user to open **Manage MCP Servers**, then **View raw config**, and add the block there |
 | Any other app with MCP servers | Add the block wherever the app keeps its MCP servers |
-| No MCP servers at all | Skip this step. Step 4 covers you |
+| No MCP servers at all | Skip this. Step 4 covers you |
 
 If a server named `framecap` is already there, update its two settings and leave the rest as it is.
 
@@ -138,7 +154,9 @@ npx -y framecap-mcp capture https://www.youtube.com/watch?v=jNQXAC9IVRw --what b
 
 - **It prints a folder** with `README.txt`: it works. Tell the user they can delete that test folder (it's in `framecap-captures`).
 - **"Activate FrameCap Pro"**: Pro isn't on in that profile. Ask the user to click **Enter Pro key** in the FrameCap menu there and paste their key. Or pick the profile that has Pro (step 2). Then run the test again.
-- **"No capture after 3 minutes"**: see Troubleshooting, then run the test again.
+- **"No capture after 3 minutes"**: ask the user whether the video opened in their browser.
+  - **It opened:** see Troubleshooting, then run the test again.
+  - **Nothing opened:** some apps run terminal commands in a closed-off space that can't open windows on the user's screen. Skip this test and go to step 7. After the restart, test through the FrameCap tool instead: the app starts FrameCap's server itself, outside that space.
 
 ## Step 7: Tell the user it's ready
 
@@ -152,6 +170,7 @@ Say it in plain English, along these lines:
 |---|---|
 | The video opens in the wrong browser or profile | The two settings aren't set, or aren't reaching the server. Run step 2 again and check the server's settings (step 3). |
 | The browser was closed and nothing happened | Without the two settings, the default browser starts in its last profile, which may not have FrameCap. Set them (steps 2 and 3). |
+| The terminal test says the video is opening, but nothing opens | Your app runs terminal commands in a closed-off space that can't open windows. Restart the app and capture through the FrameCap tool instead (for example: "Capture https://www.youtube.com/watch?v=jNQXAC9IVRw with FrameCap"). |
 | The video opened, but no "Allow and capture" | It's at the bottom right of the YouTube tab: ask the user to look there. If FrameCap Pro isn't on in that profile, FrameCap shows a message at the top of the page instead, and you get "Activate FrameCap Pro". |
 | "Activate FrameCap Pro" | The profile that opened has no active Pro key. The user turns it on there (**Enter Pro key**), or you switch the two settings to the profile that has it. |
 | "This key is already active in the most browsers it allows" | One key works in 2 browsers or profiles. In the one they no longer use, the user opens FrameCap Settings and clicks **Remove from this browser**, then pastes the key in the new one. |

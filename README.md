@@ -27,9 +27,13 @@ You do this once. After that, paste a YouTube link into your agent and ask, for 
 | [AGENTS.md](AGENTS.md) | The setup steps your agent follows |
 | [skills/framecap/SKILL.md](skills/framecap/SKILL.md) | Tells your agent when and how to use FrameCap |
 
-## Set it up yourself
+## Or run one command
 
-The commands for each app are in FrameCap's Settings, under **Connect your AI agent**, and at https://getframecap.com/mcp.
+```
+npx -y framecap-mcp install
+```
+
+It adds FrameCap to every AI app on your computer (Claude Code, Codex, Cursor, Antigravity, VS Code, Windsurf, Gemini CLI, Claude Desktop), with the browser profile that has FrameCap Pro. `npx -y framecap-mcp uninstall` takes it out again. The commands for each app one by one are in FrameCap's Settings, under **Connect your AI agent**, and at https://getframecap.com/mcp.
 
 ## Help
 
