@@ -135,6 +135,8 @@ It uses the choices saved in step 4.
 
 Say it in plain English, along these lines:
 
+From now on, whenever you capture a video, use the FrameCap tools (`capture_youtube_video`, `capture_local_video`), never the terminal command. Some apps (Antigravity, for example) run terminal commands in a closed-off space that can't open the user's browser, so a terminal capture can work one time and wait forever the next.
+
 > FrameCap is set up, using [browser], profile [name]. Restart [your app] once so it loads FrameCap. After that, in any project, paste a YouTube link and say, for example: "Watch this with FrameCap and list the steps." The browser doesn't need to be open: FrameCap opens it when needed. [It mutes the video and closes the tab when it's done, as you chose.] You only had to do this once. To change your choices later: `npx -y framecap-mcp settings`.
 
 ## Troubleshooting
@@ -143,6 +145,8 @@ Say it in plain English, along these lines:
 |---|---|
 | The video opens in the wrong browser or profile | Pick the right one: `npx -y framecap-mcp settings --pick <number>` (numbers from `--check`). If your app's FrameCap entry has its own `FRAMECAP_BROWSER`, that one wins: run `npx -y framecap-mcp install` again to replace it. |
 | The terminal test says the video is opening, but nothing opens | Your app runs terminal commands in a closed-off space that can't open windows. Restart the app and capture through the FrameCap tool instead (for example: "Capture https://www.youtube.com/watch?v=jNQXAC9IVRw with FrameCap"). |
+| It works sometimes and not other times (Antigravity, for example) | The app sometimes captures with the terminal command, which can't open the browser there. Always use the FrameCap tools instead. If the tools are missing, restart the app. |
+| The YouTube tab says "Your AI agent's FrameCap connection is out of date" | The app is still running an old FrameCap server. Run `npx -y framecap-mcp@latest install`, then restart the app. |
 | The video opened, but no "Allow and capture" | It's at the bottom right of the YouTube tab: ask the user to look there. If FrameCap Pro isn't on in that profile, FrameCap shows a message at the top of the page instead, and you get "Activate FrameCap Pro". |
 | "Activate FrameCap Pro" | The profile that opened has no active Pro key. The user turns it on there (**Enter Pro key**), or you pick the profile that has it (`settings --pick`). |
 | "This key is already active in the most browsers it allows" | One key works in 2 browsers or profiles. In the one they no longer use, the user opens FrameCap Settings and clicks **Remove from this browser**, then pastes the key in the new one. |

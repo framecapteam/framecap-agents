@@ -21,7 +21,8 @@ FrameCap captures a video in the user's own browser. You get:
    - For a tutorial: `what` both, `gap_seconds` 2 to 5 (1 for fast code), `frames_per_picture` 6 to 12.
    - For one part of a long video: `start` and `end`, like 12:00 and 25:30.
    - For slides or a talk: `smart_frames` true (keeps a frame only when the picture changes).
-   - No MCP tools? Run `npx -y framecap-mcp capture <link or file> --what both --gap 2` (see `npx -y framecap-mcp --help`).
+   - If you have the FrameCap tools, always use them, never the terminal command. Some apps (Antigravity, for example) run terminal commands in a closed-off space that can't open the user's browser, so the terminal command waits and fails there.
+   - No FrameCap tools at all? Then run `npx -y framecap-mcp capture <link or file> --what both --gap 2` (see `npx -y framecap-mcp --help`).
 2. If the reply has a `capture_id`, call `get_capture` with it until the capture is done.
 3. Read `README.txt` first, then the sheets in order, then `transcript.txt`.
 4. To read small text or code, crop the one frame you need and look at it at full size.
@@ -38,4 +39,5 @@ FrameCap captures a video in the user's own browser. You get:
 - **"Activate FrameCap Pro"**: the profile that opened has no active key. Ask the user to click **Enter Pro key** in the FrameCap menu there, or pick the profile that has Pro: `npx -y framecap-mcp settings --pick <number>` (`npx -y framecap-mcp --check` lists them).
 - **The video opens in the wrong browser or profile**: `npx -y framecap-mcp settings --pick <number>`, or run the setup again: https://raw.githubusercontent.com/framecapteam/framecap-agents/main/AGENTS.md
 - **Waiting, no result**: the first capture needs **Allow and capture** clicked at the bottom right of the YouTube tab that opened. Ask the user to look there.
+- **"Your AI agent's FrameCap connection is out of date"** (shown in the YouTube tab): run `npx -y framecap-mcp@latest install`, then ask the user to restart this app.
 - **Anything else**: the Troubleshooting table in the same AGENTS.md.
