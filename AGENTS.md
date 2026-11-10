@@ -11,22 +11,17 @@ Before each step, tell the user in one short, plain sentence what you're about t
 - **FrameCap Pro is turned on per profile.** The user pastes their key under **Enter Pro key** in the FrameCap menu. One key works in **2** browsers or profiles at a time. Captures for agents need FrameCap Pro.
 - **How a capture runs:**
   1. You call the MCP server (`framecap-mcp`).
-  2. It opens the video in a browser.
-  3. FrameCap in that browser captures it and saves a ZIP to the Downloads folder.
-  4. The server unpacks the ZIP into `framecap-captures` and tells you where the files are.
-- **So the server must open the exact browser and profile where FrameCap Pro is on.** By default it opens the computer's default browser, in the profile that browser used last. That's often the wrong one.
-- **Two settings fix that: `FRAMECAP_BROWSER` (the browser program) and `FRAMECAP_PROFILE` (the profile folder).** With both set, every capture opens in that profile:
-  - the browser closed? The server starts it.
-  - another profile open? It still goes to the right one.
-  - the user busy in another app (VS Code, for example)? It doesn't matter.
+  2. It opens the video in the user's browser.
+  3. FrameCap there captures it and saves a ZIP to the Downloads folder.
+  4. The server unpacks the ZIP and tells you where the files are.
+- **The user's choices are asked once and saved for every AI app on the computer** (in `~/.framecap/settings.json`):
+  - the browser profile with FrameCap Pro (captures open there, even when the browser is closed)
+  - whether to mute the video while it captures
+  - whether to close the video tab once the capture is saved
+  - where captures go
+- **The browser has to show the video to capture it.** It opens a tab for each capture. Muting and closing the tab keep that out of the user's way. The user can keep working in other apps meanwhile.
 - **The first capture asks once.** FrameCap shows **Allow and capture** at the bottom right of the YouTube page. After one click, later captures start on their own.
-- **Keep the tab open during a capture.** The YouTube tab that opens must stay open until the capture is done. The user can keep working in other apps.
-
-## What only the user can do
-
-- Install FrameCap and turn on FrameCap Pro (buy it on getframecap.com, then **Enter Pro key** in the FrameCap menu).
-- Tell you which browser profile has FrameCap Pro, when there's more than one with FrameCap.
-- Click **Allow and capture** once.
+- **Apps load MCP servers when they start.** After setup, the user restarts your app once.
 
 ## Step 1: Node.js
 
@@ -36,81 +31,76 @@ If it's missing or older, tell the user: "Please install Node.js (the LTS versio
 
 ## Step 2: Find the browser profile with FrameCap Pro
 
-Run `npx -y framecap-mcp --check`. Under "FrameCap in this computer's browsers", it lists every profile that has FrameCap:
-- the profile's name, with marks like `turned off` or `opens links now`
-- its `FRAMECAP_BROWSER:` value
-- its `FRAMECAP_PROFILE:` value
+Run `npx -y framecap-mcp --check`. Under "FrameCap in this computer's browsers", it lists every profile that has FrameCap, numbered, with marks like `turned off` or `opens links now`.
 
 Leave out profiles marked `turned off`. Then:
 
 - **One profile left:** that's the one. Tell the user which one you'll use.
-- **More than one:** ask the user. For example: "FrameCap is in Brave (profile Personal) and Chrome (profile Work). Which one has FrameCap Pro turned on, and which do you use most?" One key works in 2 profiles. If both have Pro, use the one they use most.
+- **More than one:** ask the user. For example: "FrameCap is in Brave (profile Personal) and Chrome (profile Work). Which one has FrameCap Pro turned on, and which do you use most?" If both have Pro, use the one they use most.
 - **None:** ask the user to install FrameCap from https://getframecap.com and turn on FrameCap Pro, then run the check again.
 - **A profile is marked `2 FrameCap copies on`:** ask the user to turn all but one off in the browser's extensions page. Two copies clash.
 
-Note that profile's two values exactly as printed. They're plain text with no quotes, even when they have spaces. You use them in steps 3 to 6.
+Note the profile's number from the list. For any line that starts with `FIX`, tell the user what it means in plain words and help them fix it.
 
-For any line that starts with `FIX`, tell the user what it means in plain words and help them fix it.
+## Step 3: Ask the user three things, once
 
-If the browser isn't Chrome, Edge or Brave, find the two values yourself: the browser program's full path, and the profile's folder name. The folders are in the browser's user data folder, named `Default`, `Profile 1`, `Profile 2` and so on.
+Ask these together, in plain words, with the suggested answer first:
 
-## Step 3: Add FrameCap to the AI apps on this computer
+1. "Should FrameCap **mute the video** while it captures? (Suggested: yes. The captions give the words, so sound isn't needed.)"
+2. "Should FrameCap **close the video tab** once the capture is saved? (Suggested: yes, so tabs don't pile up.)"
+3. "Where should captures go: **in the project** you're working in (suggested), or always in **one FrameCap folder** in your home folder?"
 
-Run this, with the number of the profile from step 2's list:
+If the user just says "go ahead" or "you choose", use the suggested answers.
+
+## Step 4: Add FrameCap to the AI apps on this computer
+
+Run this, with the profile's number from step 2 and the answers from step 3:
 
 ```
-npx -y framecap-mcp install --pick <number>
+npx -y framecap-mcp install --pick <number> --mute on --close-tab on --captures project
 ```
 
-If only one profile has FrameCap turned on, `npx -y framecap-mcp install` is enough.
+- Use `off` for a "no" answer.
+- Use `--captures folder` for one FrameCap folder.
+- If only one profile has FrameCap turned on, you can leave out `--pick`.
 
-It adds FrameCap, for every project, to each AI app it finds (Claude Code, Codex, Cursor, Antigravity, VS Code, Windsurf, Gemini CLI, Claude Desktop), with that browser profile. Everything else in their settings stays as it is, and each changed file keeps a backup. Tell the user which apps it added FrameCap to.
+It saves the choices, then adds FrameCap, for every project, to each AI app it finds: Claude Code, Codex, Cursor, Antigravity, VS Code, Windsurf, Gemini CLI and Claude Desktop. Everything else in their settings stays as it is, and each changed file keeps a backup. If an app already had a `framecap` entry, it's replaced. Tell the user which apps got FrameCap and what it saved.
 
-If your app isn't in its list, or it says `left alone` for your app, add FrameCap by hand as below.
+If your app isn't in its list, or it says `left alone` for your app, add FrameCap by hand:
 
-To take FrameCap out of every app again: `npx -y framecap-mcp uninstall`.
-
-### By hand
-
-The server starts with `npx -y framecap-mcp`. On Windows, put `cmd /c` in front (`cmd /c npx -y framecap-mcp`), because apps there can't start `npx` directly.
-
-Add it user-wide, not for one project, so it works everywhere, with the two settings from step 2. Below, `<BROWSER>` and `<PROFILE>` are those values. Wrap each in quotes in a terminal, because they can have spaces.
-
-| App | What to do |
+| App | Where |
 |---|---|
-| Claude Code | `claude mcp add --scope user framecap -e "FRAMECAP_BROWSER=<BROWSER>" -e "FRAMECAP_PROFILE=<PROFILE>" -- npx -y framecap-mcp`<br>On Windows end with `-- cmd /c npx -y framecap-mcp` |
-| Codex | `codex mcp add framecap --env "FRAMECAP_BROWSER=<BROWSER>" --env "FRAMECAP_PROFILE=<PROFILE>" -- npx -y framecap-mcp`<br>On Windows end with `-- cmd /c npx -y framecap-mcp` |
-| Cursor | Add the block below to `~/.cursor/mcp.json` |
-| Gemini CLI | Add the block below to `~/.gemini/settings.json` |
-| Windsurf | Add the block below to `~/.codeium/windsurf/mcp_config.json` |
-| Claude Desktop | Add the block below to `claude_desktop_config.json`: on Windows in `%APPDATA%\Claude\`, on macOS in `~/Library/Application Support/Claude/` |
-| VS Code | Ask the user to run **MCP: Open User Configuration** from the Command Palette, then add the block there. VS Code names the list `servers`, not `mcpServers` |
-| Antigravity | Ask the user to open **Manage MCP Servers**, then **View raw config**, and add the block there |
-| Any other app with MCP servers | Add the block wherever the app keeps its MCP servers |
-| No MCP servers at all | Skip this. Step 4 covers you |
+| Claude Code | `claude mcp add --scope user framecap -- npx -y framecap-mcp` |
+| Codex | `codex mcp add framecap -- npx -y framecap-mcp` |
+| Cursor | `~/.cursor/mcp.json` |
+| Gemini CLI | `~/.gemini/settings.json` |
+| Windsurf | `~/.codeium/windsurf/mcp_config.json` |
+| Claude Desktop | `claude_desktop_config.json`: on Windows in `%APPDATA%\Claude\`, on macOS in `~/Library/Application Support/Claude/` |
+| VS Code | Ask the user to run **MCP: Open User Configuration**, then add it there, under `servers` (not `mcpServers`) |
+| Antigravity | Ask the user to open **Manage MCP Servers**, then **View raw config** |
+| Any other app with MCP servers | Wherever the app keeps its MCP servers |
 
-If a server named `framecap` is already there, update its two settings and leave the rest as it is.
+On Windows, start the command with `cmd /c`, because apps there can't start `npx` directly. The `claude` and `codex` lines become `... -- cmd /c npx -y framecap-mcp`.
 
-**The block.** Merge it into the file's `mcpServers` list. If the file doesn't exist, create it with just this. Keep every other server. In JSON, each `\` in a Windows path is written `\\`.
+For a settings file, merge this into its `mcpServers` list and keep every other server:
 
 ```json
 {
   "mcpServers": {
-    "framecap": {
-      "command": "npx",
-      "args": ["-y", "framecap-mcp"],
-      "env": {
-        "FRAMECAP_BROWSER": "C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe",
-        "FRAMECAP_PROFILE": "Profile 2"
-      }
-    }
+    "framecap": { "command": "npx", "args": ["-y", "framecap-mcp"] }
   }
 }
 ```
 
-The two values there are examples: put in the ones from step 2. On Windows: `"command": "cmd"` and `"args": ["/c", "npx", "-y", "framecap-mcp"]`.
+On Windows: `"command": "cmd"` and `"args": ["/c", "npx", "-y", "framecap-mcp"]`.
 
-## Step 4: Learn when to use FrameCap
+No MCP servers at all? Add this line to your user-wide instructions instead (for example `~/.codex/AGENTS.md` or `~/.gemini/GEMINI.md`):
+
+```
+To see a YouTube video or a video file, run: npx -y framecap-mcp capture <YouTube link or file path> (options: npx -y framecap-mcp --help). Then read README.txt in the folder it prints.
+```
+
+## Step 5: Learn when to use FrameCap
 
 If your app has skills, save this file:
 https://raw.githubusercontent.com/framecapteam/framecap-agents/main/skills/framecap/SKILL.md
@@ -119,30 +109,11 @@ Save it as:
 - Claude Code: `~/.claude/skills/framecap/SKILL.md`
 - Codex: `~/.codex/skills/framecap/SKILL.md`
 
-If your app has no MCP servers, add these lines to your user-wide instructions instead (for example `~/.codex/AGENTS.md` or `~/.gemini/GEMINI.md`). Put in the values from step 2:
-
-```
-To see a YouTube video or a video file, run: npx -y framecap-mcp capture <YouTube link or file path> (options: npx -y framecap-mcp --help). Then read README.txt in the folder it prints.
-Before running it, set two environment variables: FRAMECAP_BROWSER=<BROWSER> and FRAMECAP_PROFILE=<PROFILE>
-```
-
-Other apps with MCP servers can skip this step: FrameCap's server tells you how to use it.
-
-## Step 5: Check again
-
-In a terminal, set the two values, then run `npx -y framecap-mcp --check` again:
-
-| Terminal | How to set them |
-|---|---|
-| PowerShell | `$env:FRAMECAP_BROWSER = "<BROWSER>"; $env:FRAMECAP_PROFILE = "<PROFILE>"` |
-| cmd | `set "FRAMECAP_BROWSER=<BROWSER>"` then `set "FRAMECAP_PROFILE=<PROFILE>"` |
-| macOS or Linux | `export FRAMECAP_BROWSER="<BROWSER>" FRAMECAP_PROFILE="<PROFILE>"` |
-
-The chosen profile should now be marked `[chosen]`.
+Other apps can skip this: FrameCap's server tells you how to use it.
 
 ## Step 6: Test it with a short video
 
-This test works before your app restarts. Use the same terminal, with the two values still set. First tell the user:
+First tell the user:
 
 "Your browser will now open a short YouTube video in [browser, profile]. At the bottom right of that page, FrameCap asks **Allow and capture**: please click it. You only do this once."
 
@@ -152,32 +123,36 @@ Then run:
 npx -y framecap-mcp capture https://www.youtube.com/watch?v=jNQXAC9IVRw --what both --timeout 3
 ```
 
-- **It prints a folder** with `README.txt`: it works. Tell the user they can delete that test folder (it's in `framecap-captures`).
-- **"Activate FrameCap Pro"**: Pro isn't on in that profile. Ask the user to click **Enter Pro key** in the FrameCap menu there and paste their key. Or pick the profile that has Pro (step 2). Then run the test again.
+It uses the choices saved in step 4.
+
+- **It prints a folder** with `README.txt`: it works. Tell the user where the test capture is; they can delete it.
+- **"Activate FrameCap Pro"**: Pro isn't on in that profile. Ask the user to click **Enter Pro key** in the FrameCap menu there and paste their key. Or pick the profile that has Pro: `npx -y framecap-mcp settings --pick <number>`. Then run the test again.
 - **"No capture after 3 minutes"**: ask the user whether the video opened in their browser.
   - **It opened:** see Troubleshooting, then run the test again.
-  - **Nothing opened:** some apps run terminal commands in a closed-off space that can't open windows on the user's screen. Skip this test and go to step 7. After the restart, test through the FrameCap tool instead: the app starts FrameCap's server itself, outside that space.
+  - **Nothing opened:** some apps run terminal commands in a closed-off space that can't open windows on the user's screen. Skip this test. After the restart in step 7, test through the FrameCap tool instead: the app starts FrameCap's server itself, outside that space.
 
 ## Step 7: Tell the user it's ready
 
 Say it in plain English, along these lines:
 
-> FrameCap is set up, using [browser], profile [name]. Restart [your app] once so it loads FrameCap. After that, in any project, paste a YouTube link and say, for example: "Watch this with FrameCap and list the steps." You only had to do this once: it keeps working as long as FrameCap Pro is active in that profile. The browser doesn't need to be open: FrameCap opens it when needed. Just leave the video tab open until the capture is done.
+> FrameCap is set up, using [browser], profile [name]. Restart [your app] once so it loads FrameCap. After that, in any project, paste a YouTube link and say, for example: "Watch this with FrameCap and list the steps." The browser doesn't need to be open: FrameCap opens it when needed. [It mutes the video and closes the tab when it's done, as you chose.] You only had to do this once. To change your choices later: `npx -y framecap-mcp settings`.
 
 ## Troubleshooting
 
 | What happens | Why, and what to do |
 |---|---|
-| The video opens in the wrong browser or profile | The two settings aren't set, or aren't reaching the server. Run step 2 again and check the server's settings (step 3). |
-| The browser was closed and nothing happened | Without the two settings, the default browser starts in its last profile, which may not have FrameCap. Set them (steps 2 and 3). |
+| The video opens in the wrong browser or profile | Pick the right one: `npx -y framecap-mcp settings --pick <number>` (numbers from `--check`). If your app's FrameCap entry has its own `FRAMECAP_BROWSER`, that one wins: run `npx -y framecap-mcp install` again to replace it. |
 | The terminal test says the video is opening, but nothing opens | Your app runs terminal commands in a closed-off space that can't open windows. Restart the app and capture through the FrameCap tool instead (for example: "Capture https://www.youtube.com/watch?v=jNQXAC9IVRw with FrameCap"). |
 | The video opened, but no "Allow and capture" | It's at the bottom right of the YouTube tab: ask the user to look there. If FrameCap Pro isn't on in that profile, FrameCap shows a message at the top of the page instead, and you get "Activate FrameCap Pro". |
-| "Activate FrameCap Pro" | The profile that opened has no active Pro key. The user turns it on there (**Enter Pro key**), or you switch the two settings to the profile that has it. |
+| "Activate FrameCap Pro" | The profile that opened has no active Pro key. The user turns it on there (**Enter Pro key**), or you pick the profile that has it (`settings --pick`). |
 | "This key is already active in the most browsers it allows" | One key works in 2 browsers or profiles. In the one they no longer use, the user opens FrameCap Settings and clicks **Remove from this browser**, then pastes the key in the new one. |
+| Captures land in a strange folder | Choose: `npx -y framecap-mcp settings --captures project` or `--captures folder`. |
 | The browser asks where to save each download | Ask the user to turn that off in the browser's download settings. |
 | `npx` is not recognized | Node.js isn't installed, or the terminal was open before it was. Install it, then open a new terminal. |
-| `spawn npx ENOENT` on Windows | Use the `cmd /c` form from step 3. |
+| `spawn npx ENOENT` on Windows | Use the `cmd /c` form. |
 | A long video answers with a `capture_id` | That's normal: call `get_capture` with it until the capture is done. |
 | The user closed the video tab mid-capture | Start the capture again and ask them to leave the tab open until it's done. |
+
+To take FrameCap out of every app: `npx -y framecap-mcp uninstall`.
 
 More help: https://getframecap.com/mcp

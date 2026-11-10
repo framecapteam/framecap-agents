@@ -12,11 +12,12 @@ Set up FrameCap for me: read https://raw.githubusercontent.com/framecapteam/fram
 
 Your agent then:
 1. checks that Node.js is installed
-2. adds FrameCap's MCP server for all your projects
-3. learns when to use FrameCap
-4. checks your computer
-5. runs a test with a short video (click **Allow and capture** in your browser once)
-6. tells you in plain English when it's ready
+2. finds the browser profile with FrameCap Pro (it asks if there's more than one)
+3. asks you three things once: mute the video while it captures, close its tab when done, and where captures go
+4. adds FrameCap to every AI app on your computer, for all your projects
+5. learns when to use FrameCap
+6. runs a test with a short video (click **Allow and capture** in your browser once)
+7. tells you in plain English when it's ready
 
 You do this once. After that, paste a YouTube link into your agent and ask, for example: "Watch this with FrameCap and list the steps."
 
@@ -33,7 +34,7 @@ You do this once. After that, paste a YouTube link into your agent and ask, for 
 npx -y framecap-mcp install
 ```
 
-It adds FrameCap to every AI app on your computer (Claude Code, Codex, Cursor, Antigravity, VS Code, Windsurf, Gemini CLI, Claude Desktop), with the browser profile that has FrameCap Pro. `npx -y framecap-mcp uninstall` takes it out again. The commands for each app one by one are in FrameCap's Settings, under **Connect your AI agent**, and at https://getframecap.com/mcp.
+It adds FrameCap to every AI app on your computer (Claude Code, Codex, Cursor, Antigravity, VS Code, Windsurf, Gemini CLI, Claude Desktop). It asks a few things once: the browser profile with FrameCap Pro, whether to mute the video and close its tab when done, and where captures go. `npx -y framecap-mcp settings` changes them later; `npx -y framecap-mcp uninstall` takes FrameCap out again. The commands for each app one by one are in FrameCap's Settings, under **Connect your AI agent**, and at https://getframecap.com/mcp.
 
 ## Help
 

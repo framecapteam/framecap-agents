@@ -29,12 +29,13 @@ FrameCap captures a video in the user's own browser. You get:
 
 ## Good to know
 
-- FrameCap runs in one browser profile, the one with FrameCap Pro on (one key works in 2). The server opens that profile through its `FRAMECAP_BROWSER` and `FRAMECAP_PROFILE` settings, even when the browser is closed. You don't need the user to open anything.
+- FrameCap runs in one browser profile, the one with FrameCap Pro on (one key works in 2). The user's choices are saved once for every app: that profile (opened even when the browser is closed), muting the video, closing the tab when done, and where captures go. You don't need the user to open anything.
 - The YouTube tab that opens must stay open until the capture is done. The user can keep working in other apps.
+- The user wants something different (another profile, sound on, keep the tab, another folder)? `npx -y framecap-mcp settings` with `--pick <number>`, `--mute on|off`, `--close-tab on|off` or `--captures project|folder`.
 
 ## If it fails
 
-- **"Activate FrameCap Pro"**: the profile that opened has no active key. Ask the user to click **Enter Pro key** in the FrameCap menu there, or point the two settings at the profile that has Pro (`npx -y framecap-mcp --check` lists them).
-- **The video opens in the wrong browser or profile**: the two settings aren't set for the server. Run the setup again: https://raw.githubusercontent.com/framecapteam/framecap-agents/main/AGENTS.md
+- **"Activate FrameCap Pro"**: the profile that opened has no active key. Ask the user to click **Enter Pro key** in the FrameCap menu there, or pick the profile that has Pro: `npx -y framecap-mcp settings --pick <number>` (`npx -y framecap-mcp --check` lists them).
+- **The video opens in the wrong browser or profile**: `npx -y framecap-mcp settings --pick <number>`, or run the setup again: https://raw.githubusercontent.com/framecapteam/framecap-agents/main/AGENTS.md
 - **Waiting, no result**: the first capture needs **Allow and capture** clicked at the bottom right of the YouTube tab that opened. Ask the user to look there.
 - **Anything else**: the Troubleshooting table in the same AGENTS.md.
