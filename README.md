@@ -31,7 +31,7 @@ You do this once. After that, paste a YouTube link into your agent and ask, for 
 ## Or run one command
 
 ```
-npx -y framecap-mcp install
+npx -y framecap-mcp@latest install
 ```
 
 It adds FrameCap to every AI app on your computer (Claude Code, Codex, Cursor, Antigravity, VS Code, Windsurf, Gemini CLI, Claude Desktop). It asks a few things once: the browser profile with FrameCap Pro, whether to mute the video and close its tab when done, and where captures go. `npx -y framecap-mcp settings` changes them later; `npx -y framecap-mcp uninstall` takes FrameCap out again. The commands for each app one by one are in FrameCap's Settings, under **Connect your AI agent**, and at https://getframecap.com/mcp.

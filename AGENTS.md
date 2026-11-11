@@ -57,7 +57,7 @@ If the user just says "go ahead" or "you choose", use the suggested answers.
 Run this, with the profile's number from step 2 and the answers from step 3:
 
 ```
-npx -y framecap-mcp install --pick <number> --mute on --close-tab on --captures project
+npx -y framecap-mcp@latest install --pick <number> --mute on --close-tab on --captures project
 ```
 
 - Use `off` for a "no" answer.
@@ -70,8 +70,8 @@ If your app isn't in its list, or it says `left alone` for your app, add FrameCa
 
 | App | Where |
 |---|---|
-| Claude Code | `claude mcp add --scope user framecap -- npx -y framecap-mcp` |
-| Codex | `codex mcp add framecap -- npx -y framecap-mcp` |
+| Claude Code | `claude mcp add --scope user framecap -- npx -y framecap-mcp@latest` |
+| Codex | `codex mcp add framecap -- npx -y framecap-mcp@latest` |
 | Cursor | `~/.cursor/mcp.json` |
 | Gemini CLI | `~/.gemini/settings.json` |
 | Windsurf | `~/.codeium/windsurf/mcp_config.json` |
@@ -87,12 +87,12 @@ For a settings file, merge this into its `mcpServers` list and keep every other 
 ```json
 {
   "mcpServers": {
-    "framecap": { "command": "npx", "args": ["-y", "framecap-mcp"] }
+    "framecap": { "command": "npx", "args": ["-y", "framecap-mcp@latest"] }
   }
 }
 ```
 
-On Windows: `"command": "cmd"` and `"args": ["/c", "npx", "-y", "framecap-mcp"]`.
+On Windows: `"command": "cmd"` and `"args": ["/c", "npx", "-y", "framecap-mcp@latest"]`.
 
 No MCP servers at all? Add this line to your user-wide instructions instead (for example `~/.codex/AGENTS.md` or `~/.gemini/GEMINI.md`):
 
@@ -135,15 +135,20 @@ It uses the choices saved in step 4.
 
 Say it in plain English, along these lines:
 
-From now on, whenever you capture a video, use the FrameCap tools (`capture_youtube_video`, `capture_local_video`), never the terminal command. Some apps (Antigravity, for example) run terminal commands in a closed-off space that can't open the user's browser, so a terminal capture can work one time and wait forever the next.
-
 > FrameCap is set up, using [browser], profile [name]. Restart [your app] once so it loads FrameCap. After that, in any project, paste a YouTube link and say, for example: "Watch this with FrameCap and list the steps." The browser doesn't need to be open: FrameCap opens it when needed. [It mutes the video and closes the tab when it's done, as you chose.] You only had to do this once. To change your choices later: `npx -y framecap-mcp settings`.
+
+## Rules for every capture
+
+- **Use the FrameCap tools** (`capture_youtube_video`, `capture_local_video`), never the terminal command, when you have them. Some apps (Antigravity, for example) run terminal commands in a closed-off space that can't open the user's browser, so a terminal capture can work one time and wait forever the next.
+- **Be honest.** Say you watched a video only after you read its sheets. If a capture fails or times out, tell the user exactly that and what the error says. Never present a transcript from another tool as having watched the video.
+- **Keep the key private.** Never show, print or share the contents of `~/.framecap/mcp-key.txt`, not even part of it. It lets captures start without asking the user. The FrameCap Pro license key stays in the browser; you can't see it and don't need it.
+- **Pick a profile where FrameCap is on.** `--check` marks profiles where it's turned off. Don't choose one of those; if the user wants it, ask them to turn FrameCap on there first.
 
 ## Troubleshooting
 
 | What happens | Why, and what to do |
 |---|---|
-| The video opens in the wrong browser or profile | Pick the right one: `npx -y framecap-mcp settings --pick <number>` (numbers from `--check`). If your app's FrameCap entry has its own `FRAMECAP_BROWSER`, that one wins: run `npx -y framecap-mcp install` again to replace it. |
+| The video opens in the wrong browser or profile | Pick the right one: `npx -y framecap-mcp settings --pick <number>` (numbers from `--check`). If your app's FrameCap entry has its own `FRAMECAP_BROWSER`, that one wins: run `npx -y framecap-mcp@latest install` again to replace it. |
 | The terminal test says the video is opening, but nothing opens | Your app runs terminal commands in a closed-off space that can't open windows. Restart the app and capture through the FrameCap tool instead (for example: "Capture https://www.youtube.com/watch?v=jNQXAC9IVRw with FrameCap"). |
 | It works sometimes and not other times (Antigravity, for example) | The app sometimes captures with the terminal command, which can't open the browser there. Always use the FrameCap tools instead. If the tools are missing, restart the app. |
 | The YouTube tab says "Your AI agent's FrameCap connection is out of date" | The app is still running an old FrameCap server. Run `npx -y framecap-mcp@latest install`, then restart the app. |

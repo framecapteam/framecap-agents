@@ -28,6 +28,11 @@ FrameCap captures a video in the user's own browser. You get:
 4. To read small text or code, crop the one frame you need and look at it at full size.
 5. When you tell the user where something happens, give its time (t=MM:SS).
 
+## Be honest
+
+- Say you watched a video only after you read its sheets. If a capture fails or times out, tell the user exactly that and what the error says. Never present a transcript from another tool as having watched the video.
+- Never show, print or share the contents of `~/.framecap/mcp-key.txt`, not even part of it. It lets captures start without asking the user.
+
 ## Good to know
 
 - FrameCap runs in one browser profile, the one with FrameCap Pro on (one key works in 2). The user's choices are saved once for every app: that profile (opened even when the browser is closed), muting the video, closing the tab when done, and where captures go. You don't need the user to open anything.
